@@ -29,7 +29,8 @@ const (
 	GetJobStatusResponse_RUNNING  GetJobStatusResponse_Status = 1 // job is active
 	GetJobStatusResponse_FINISHED GetJobStatusResponse_Status = 2 // job finished successfully
 	GetJobStatusResponse_FAILED   GetJobStatusResponse_Status = 3 // job finished with non-zero exit code
-	GetJobStatusResponse_ERROR    GetJobStatusResponse_Status = 4 // job creation failed
+	GetJobStatusResponse_STOPPED  GetJobStatusResponse_Status = 4 // job was manually stopped
+	GetJobStatusResponse_ERROR    GetJobStatusResponse_Status = 5 // job creation failed
 )
 
 // Enum value maps for GetJobStatusResponse_Status.
@@ -39,14 +40,16 @@ var (
 		1: "RUNNING",
 		2: "FINISHED",
 		3: "FAILED",
-		4: "ERROR",
+		4: "STOPPED",
+		5: "ERROR",
 	}
 	GetJobStatusResponse_Status_value = map[string]int32{
 		"UNKNOWN":  0,
 		"RUNNING":  1,
 		"FINISHED": 2,
 		"FAILED":   3,
-		"ERROR":    4,
+		"STOPPED":  4,
+		"ERROR":    5,
 	}
 )
 
@@ -79,9 +82,8 @@ func (GetJobStatusResponse_Status) EnumDescriptor() ([]byte, []int) {
 
 type StartJobRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Command       string                 `protobuf:"bytes,2,opt,name=command,proto3" json:"command,omitempty"`
-	Args          []string               `protobuf:"bytes,3,rep,name=args,proto3" json:"args,omitempty"`
+	Command       string                 `protobuf:"bytes,1,opt,name=command,proto3" json:"command,omitempty"`
+	Args          []string               `protobuf:"bytes,2,rep,name=args,proto3" json:"args,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -116,13 +118,6 @@ func (*StartJobRequest) Descriptor() ([]byte, []int) {
 	return file_jobrpc_jobsvc_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *StartJobRequest) GetName() string {
-	if x != nil {
-		return x.Name
-	}
-	return ""
-}
-
 func (x *StartJobRequest) GetCommand() string {
 	if x != nil {
 		return x.Command
@@ -139,7 +134,7 @@ func (x *StartJobRequest) GetArgs() []string {
 
 type StartJobResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -174,16 +169,16 @@ func (*StartJobResponse) Descriptor() ([]byte, []int) {
 	return file_jobrpc_jobsvc_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *StartJobResponse) GetName() string {
+func (x *StartJobResponse) GetId() string {
 	if x != nil {
-		return x.Name
+		return x.Id
 	}
 	return ""
 }
 
 type StopJobRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -218,9 +213,9 @@ func (*StopJobRequest) Descriptor() ([]byte, []int) {
 	return file_jobrpc_jobsvc_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *StopJobRequest) GetName() string {
+func (x *StopJobRequest) GetId() string {
 	if x != nil {
-		return x.Name
+		return x.Id
 	}
 	return ""
 }
@@ -263,7 +258,7 @@ func (*StopJobResponse) Descriptor() ([]byte, []int) {
 
 type GetJobStatusRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -298,9 +293,9 @@ func (*GetJobStatusRequest) Descriptor() ([]byte, []int) {
 	return file_jobrpc_jobsvc_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *GetJobStatusRequest) GetName() string {
+func (x *GetJobStatusRequest) GetId() string {
 	if x != nil {
-		return x.Name
+		return x.Id
 	}
 	return ""
 }
@@ -308,11 +303,8 @@ func (x *GetJobStatusRequest) GetName() string {
 type GetJobStatusResponse struct {
 	state         protoimpl.MessageState      `protogen:"open.v1"`
 	Status        GetJobStatusResponse_Status `protobuf:"varint,1,opt,name=status,proto3,enum=jobrpc.GetJobStatusResponse_Status" json:"status,omitempty"`
-	Pid           int32                       `protobuf:"varint,2,opt,name=pid,proto3" json:"pid,omitempty"`
-	Command       string                      `protobuf:"bytes,3,opt,name=command,proto3" json:"command,omitempty"`
-	StartedAt     string                      `protobuf:"bytes,4,opt,name=started_at,json=startedAt,proto3" json:"started_at,omitempty"`
-	FinishedAt    string                      `protobuf:"bytes,5,opt,name=finished_at,json=finishedAt,proto3" json:"finished_at,omitempty"`
-	ExitCode      int32                       `protobuf:"varint,6,opt,name=exit_code,json=exitCode,proto3" json:"exit_code,omitempty"`
+	Command       string                      `protobuf:"bytes,2,opt,name=command,proto3" json:"command,omitempty"`
+	ExitCode      int32                       `protobuf:"varint,3,opt,name=exit_code,json=exitCode,proto3" json:"exit_code,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -354,30 +346,9 @@ func (x *GetJobStatusResponse) GetStatus() GetJobStatusResponse_Status {
 	return GetJobStatusResponse_UNKNOWN
 }
 
-func (x *GetJobStatusResponse) GetPid() int32 {
-	if x != nil {
-		return x.Pid
-	}
-	return 0
-}
-
 func (x *GetJobStatusResponse) GetCommand() string {
 	if x != nil {
 		return x.Command
-	}
-	return ""
-}
-
-func (x *GetJobStatusResponse) GetStartedAt() string {
-	if x != nil {
-		return x.StartedAt
-	}
-	return ""
-}
-
-func (x *GetJobStatusResponse) GetFinishedAt() string {
-	if x != nil {
-		return x.FinishedAt
 	}
 	return ""
 }
@@ -391,7 +362,7 @@ func (x *GetJobStatusResponse) GetExitCode() int32 {
 
 type GetJobLogsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -426,9 +397,9 @@ func (*GetJobLogsRequest) Descriptor() ([]byte, []int) {
 	return file_jobrpc_jobsvc_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *GetJobLogsRequest) GetName() string {
+func (x *GetJobLogsRequest) GetId() string {
 	if x != nil {
-		return x.Name
+		return x.Id
 	}
 	return ""
 }
@@ -477,209 +448,44 @@ func (x *GetJobLogsResponse) GetData() []byte {
 	return nil
 }
 
-type ListJobsRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *ListJobsRequest) Reset() {
-	*x = ListJobsRequest{}
-	mi := &file_jobrpc_jobsvc_proto_msgTypes[8]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ListJobsRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ListJobsRequest) ProtoMessage() {}
-
-func (x *ListJobsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_jobrpc_jobsvc_proto_msgTypes[8]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ListJobsRequest.ProtoReflect.Descriptor instead.
-func (*ListJobsRequest) Descriptor() ([]byte, []int) {
-	return file_jobrpc_jobsvc_proto_rawDescGZIP(), []int{8}
-}
-
-type ListJobsResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Jobs          []*JobSummary          `protobuf:"bytes,1,rep,name=jobs,proto3" json:"jobs,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *ListJobsResponse) Reset() {
-	*x = ListJobsResponse{}
-	mi := &file_jobrpc_jobsvc_proto_msgTypes[9]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ListJobsResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ListJobsResponse) ProtoMessage() {}
-
-func (x *ListJobsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_jobrpc_jobsvc_proto_msgTypes[9]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ListJobsResponse.ProtoReflect.Descriptor instead.
-func (*ListJobsResponse) Descriptor() ([]byte, []int) {
-	return file_jobrpc_jobsvc_proto_rawDescGZIP(), []int{9}
-}
-
-func (x *ListJobsResponse) GetJobs() []*JobSummary {
-	if x != nil {
-		return x.Jobs
-	}
-	return nil
-}
-
-type JobSummary struct {
-	state         protoimpl.MessageState      `protogen:"open.v1"`
-	Name          string                      `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Status        GetJobStatusResponse_Status `protobuf:"varint,2,opt,name=status,proto3,enum=jobrpc.GetJobStatusResponse_Status" json:"status,omitempty"`
-	StartedAt     string                      `protobuf:"bytes,3,opt,name=started_at,json=startedAt,proto3" json:"started_at,omitempty"`
-	FinishedAt    string                      `protobuf:"bytes,4,opt,name=finished_at,json=finishedAt,proto3" json:"finished_at,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *JobSummary) Reset() {
-	*x = JobSummary{}
-	mi := &file_jobrpc_jobsvc_proto_msgTypes[10]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *JobSummary) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*JobSummary) ProtoMessage() {}
-
-func (x *JobSummary) ProtoReflect() protoreflect.Message {
-	mi := &file_jobrpc_jobsvc_proto_msgTypes[10]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use JobSummary.ProtoReflect.Descriptor instead.
-func (*JobSummary) Descriptor() ([]byte, []int) {
-	return file_jobrpc_jobsvc_proto_rawDescGZIP(), []int{10}
-}
-
-func (x *JobSummary) GetName() string {
-	if x != nil {
-		return x.Name
-	}
-	return ""
-}
-
-func (x *JobSummary) GetStatus() GetJobStatusResponse_Status {
-	if x != nil {
-		return x.Status
-	}
-	return GetJobStatusResponse_UNKNOWN
-}
-
-func (x *JobSummary) GetStartedAt() string {
-	if x != nil {
-		return x.StartedAt
-	}
-	return ""
-}
-
-func (x *JobSummary) GetFinishedAt() string {
-	if x != nil {
-		return x.FinishedAt
-	}
-	return ""
-}
-
 var File_jobrpc_jobsvc_proto protoreflect.FileDescriptor
 
 const file_jobrpc_jobsvc_proto_rawDesc = "" +
 	"\n" +
-	"\x13jobrpc/jobsvc.proto\x12\x06jobrpc\"S\n" +
-	"\x0fStartJobRequest\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12\x18\n" +
-	"\acommand\x18\x02 \x01(\tR\acommand\x12\x12\n" +
-	"\x04args\x18\x03 \x03(\tR\x04args\"&\n" +
-	"\x10StartJobResponse\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\"$\n" +
-	"\x0eStopJobRequest\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\"\x11\n" +
-	"\x0fStopJobResponse\")\n" +
-	"\x13GetJobStatusRequest\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\"\xa5\x02\n" +
+	"\x13jobrpc/jobsvc.proto\x12\x06jobrpc\"?\n" +
+	"\x0fStartJobRequest\x12\x18\n" +
+	"\acommand\x18\x01 \x01(\tR\acommand\x12\x12\n" +
+	"\x04args\x18\x02 \x03(\tR\x04args\"\"\n" +
+	"\x10StartJobResponse\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\" \n" +
+	"\x0eStopJobRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"\x11\n" +
+	"\x0fStopJobResponse\"%\n" +
+	"\x13GetJobStatusRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"\xe0\x01\n" +
 	"\x14GetJobStatusResponse\x12;\n" +
-	"\x06status\x18\x01 \x01(\x0e2#.jobrpc.GetJobStatusResponse.StatusR\x06status\x12\x10\n" +
-	"\x03pid\x18\x02 \x01(\x05R\x03pid\x12\x18\n" +
-	"\acommand\x18\x03 \x01(\tR\acommand\x12\x1d\n" +
-	"\n" +
-	"started_at\x18\x04 \x01(\tR\tstartedAt\x12\x1f\n" +
-	"\vfinished_at\x18\x05 \x01(\tR\n" +
-	"finishedAt\x12\x1b\n" +
-	"\texit_code\x18\x06 \x01(\x05R\bexitCode\"G\n" +
+	"\x06status\x18\x01 \x01(\x0e2#.jobrpc.GetJobStatusResponse.StatusR\x06status\x12\x18\n" +
+	"\acommand\x18\x02 \x01(\tR\acommand\x12\x1b\n" +
+	"\texit_code\x18\x03 \x01(\x05R\bexitCode\"T\n" +
 	"\x06Status\x12\v\n" +
 	"\aUNKNOWN\x10\x00\x12\v\n" +
 	"\aRUNNING\x10\x01\x12\f\n" +
 	"\bFINISHED\x10\x02\x12\n" +
 	"\n" +
-	"\x06FAILED\x10\x03\x12\t\n" +
-	"\x05ERROR\x10\x04\"'\n" +
-	"\x11GetJobLogsRequest\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\"(\n" +
+	"\x06FAILED\x10\x03\x12\v\n" +
+	"\aSTOPPED\x10\x04\x12\t\n" +
+	"\x05ERROR\x10\x05\"#\n" +
+	"\x11GetJobLogsRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"(\n" +
 	"\x12GetJobLogsResponse\x12\x12\n" +
-	"\x04data\x18\x01 \x01(\fR\x04data\"\x11\n" +
-	"\x0fListJobsRequest\":\n" +
-	"\x10ListJobsResponse\x12&\n" +
-	"\x04jobs\x18\x01 \x03(\v2\x12.jobrpc.JobSummaryR\x04jobs\"\x9d\x01\n" +
-	"\n" +
-	"JobSummary\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12;\n" +
-	"\x06status\x18\x02 \x01(\x0e2#.jobrpc.GetJobStatusResponse.StatusR\x06status\x12\x1d\n" +
-	"\n" +
-	"started_at\x18\x03 \x01(\tR\tstartedAt\x12\x1f\n" +
-	"\vfinished_at\x18\x04 \x01(\tR\n" +
-	"finishedAt2\xd8\x02\n" +
+	"\x04data\x18\x01 \x01(\fR\x04data2\x99\x02\n" +
 	"\n" +
 	"JobService\x12=\n" +
 	"\bStartJob\x12\x17.jobrpc.StartJobRequest\x1a\x18.jobrpc.StartJobResponse\x12:\n" +
 	"\aStopJob\x12\x16.jobrpc.StopJobRequest\x1a\x17.jobrpc.StopJobResponse\x12I\n" +
 	"\fGetJobStatus\x12\x1b.jobrpc.GetJobStatusRequest\x1a\x1c.jobrpc.GetJobStatusResponse\x12E\n" +
 	"\n" +
-	"GetJobLogs\x12\x19.jobrpc.GetJobLogsRequest\x1a\x1a.jobrpc.GetJobLogsResponse0\x01\x12=\n" +
-	"\bListJobs\x12\x17.jobrpc.ListJobsRequest\x1a\x18.jobrpc.ListJobsResponseB\"Z github.com/wrboyce/jobsvc/jobrpcb\x06proto3"
+	"GetJobLogs\x12\x19.jobrpc.GetJobLogsRequest\x1a\x1a.jobrpc.GetJobLogsResponse0\x01B\"Z github.com/wrboyce/jobsvc/jobrpcb\x06proto3"
 
 var (
 	file_jobrpc_jobsvc_proto_rawDescOnce sync.Once
@@ -694,7 +500,7 @@ func file_jobrpc_jobsvc_proto_rawDescGZIP() []byte {
 }
 
 var file_jobrpc_jobsvc_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_jobrpc_jobsvc_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
+var file_jobrpc_jobsvc_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_jobrpc_jobsvc_proto_goTypes = []any{
 	(GetJobStatusResponse_Status)(0), // 0: jobrpc.GetJobStatusResponse.Status
 	(*StartJobRequest)(nil),          // 1: jobrpc.StartJobRequest
@@ -705,29 +511,22 @@ var file_jobrpc_jobsvc_proto_goTypes = []any{
 	(*GetJobStatusResponse)(nil),     // 6: jobrpc.GetJobStatusResponse
 	(*GetJobLogsRequest)(nil),        // 7: jobrpc.GetJobLogsRequest
 	(*GetJobLogsResponse)(nil),       // 8: jobrpc.GetJobLogsResponse
-	(*ListJobsRequest)(nil),          // 9: jobrpc.ListJobsRequest
-	(*ListJobsResponse)(nil),         // 10: jobrpc.ListJobsResponse
-	(*JobSummary)(nil),               // 11: jobrpc.JobSummary
 }
 var file_jobrpc_jobsvc_proto_depIdxs = []int32{
-	0,  // 0: jobrpc.GetJobStatusResponse.status:type_name -> jobrpc.GetJobStatusResponse.Status
-	11, // 1: jobrpc.ListJobsResponse.jobs:type_name -> jobrpc.JobSummary
-	0,  // 2: jobrpc.JobSummary.status:type_name -> jobrpc.GetJobStatusResponse.Status
-	1,  // 3: jobrpc.JobService.StartJob:input_type -> jobrpc.StartJobRequest
-	3,  // 4: jobrpc.JobService.StopJob:input_type -> jobrpc.StopJobRequest
-	5,  // 5: jobrpc.JobService.GetJobStatus:input_type -> jobrpc.GetJobStatusRequest
-	7,  // 6: jobrpc.JobService.GetJobLogs:input_type -> jobrpc.GetJobLogsRequest
-	9,  // 7: jobrpc.JobService.ListJobs:input_type -> jobrpc.ListJobsRequest
-	2,  // 8: jobrpc.JobService.StartJob:output_type -> jobrpc.StartJobResponse
-	4,  // 9: jobrpc.JobService.StopJob:output_type -> jobrpc.StopJobResponse
-	6,  // 10: jobrpc.JobService.GetJobStatus:output_type -> jobrpc.GetJobStatusResponse
-	8,  // 11: jobrpc.JobService.GetJobLogs:output_type -> jobrpc.GetJobLogsResponse
-	10, // 12: jobrpc.JobService.ListJobs:output_type -> jobrpc.ListJobsResponse
-	8,  // [8:13] is the sub-list for method output_type
-	3,  // [3:8] is the sub-list for method input_type
-	3,  // [3:3] is the sub-list for extension type_name
-	3,  // [3:3] is the sub-list for extension extendee
-	0,  // [0:3] is the sub-list for field type_name
+	0, // 0: jobrpc.GetJobStatusResponse.status:type_name -> jobrpc.GetJobStatusResponse.Status
+	1, // 1: jobrpc.JobService.StartJob:input_type -> jobrpc.StartJobRequest
+	3, // 2: jobrpc.JobService.StopJob:input_type -> jobrpc.StopJobRequest
+	5, // 3: jobrpc.JobService.GetJobStatus:input_type -> jobrpc.GetJobStatusRequest
+	7, // 4: jobrpc.JobService.GetJobLogs:input_type -> jobrpc.GetJobLogsRequest
+	2, // 5: jobrpc.JobService.StartJob:output_type -> jobrpc.StartJobResponse
+	4, // 6: jobrpc.JobService.StopJob:output_type -> jobrpc.StopJobResponse
+	6, // 7: jobrpc.JobService.GetJobStatus:output_type -> jobrpc.GetJobStatusResponse
+	8, // 8: jobrpc.JobService.GetJobLogs:output_type -> jobrpc.GetJobLogsResponse
+	5, // [5:9] is the sub-list for method output_type
+	1, // [1:5] is the sub-list for method input_type
+	1, // [1:1] is the sub-list for extension type_name
+	1, // [1:1] is the sub-list for extension extendee
+	0, // [0:1] is the sub-list for field type_name
 }
 
 func init() { file_jobrpc_jobsvc_proto_init() }
@@ -741,7 +540,7 @@ func file_jobrpc_jobsvc_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_jobrpc_jobsvc_proto_rawDesc), len(file_jobrpc_jobsvc_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   11,
+			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

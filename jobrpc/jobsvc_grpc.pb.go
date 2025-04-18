@@ -24,7 +24,6 @@ const (
 	JobService_StopJob_FullMethodName      = "/jobrpc.JobService/StopJob"
 	JobService_GetJobStatus_FullMethodName = "/jobrpc.JobService/GetJobStatus"
 	JobService_GetJobLogs_FullMethodName   = "/jobrpc.JobService/GetJobLogs"
-	JobService_ListJobs_FullMethodName     = "/jobrpc.JobService/ListJobs"
 )
 
 // JobServiceClient is the client API for JobService service.
@@ -35,7 +34,6 @@ type JobServiceClient interface {
 	StopJob(ctx context.Context, in *StopJobRequest, opts ...grpc.CallOption) (*StopJobResponse, error)
 	GetJobStatus(ctx context.Context, in *GetJobStatusRequest, opts ...grpc.CallOption) (*GetJobStatusResponse, error)
 	GetJobLogs(ctx context.Context, in *GetJobLogsRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[GetJobLogsResponse], error)
-	ListJobs(ctx context.Context, in *ListJobsRequest, opts ...grpc.CallOption) (*ListJobsResponse, error)
 }
 
 type jobServiceClient struct {
@@ -95,16 +93,6 @@ func (c *jobServiceClient) GetJobLogs(ctx context.Context, in *GetJobLogsRequest
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type JobService_GetJobLogsClient = grpc.ServerStreamingClient[GetJobLogsResponse]
 
-func (c *jobServiceClient) ListJobs(ctx context.Context, in *ListJobsRequest, opts ...grpc.CallOption) (*ListJobsResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ListJobsResponse)
-	err := c.cc.Invoke(ctx, JobService_ListJobs_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // JobServiceServer is the server API for JobService service.
 // All implementations must embed UnimplementedJobServiceServer
 // for forward compatibility.
@@ -113,7 +101,6 @@ type JobServiceServer interface {
 	StopJob(context.Context, *StopJobRequest) (*StopJobResponse, error)
 	GetJobStatus(context.Context, *GetJobStatusRequest) (*GetJobStatusResponse, error)
 	GetJobLogs(*GetJobLogsRequest, grpc.ServerStreamingServer[GetJobLogsResponse]) error
-	ListJobs(context.Context, *ListJobsRequest) (*ListJobsResponse, error)
 	mustEmbedUnimplementedJobServiceServer()
 }
 
@@ -135,9 +122,6 @@ func (UnimplementedJobServiceServer) GetJobStatus(context.Context, *GetJobStatus
 }
 func (UnimplementedJobServiceServer) GetJobLogs(*GetJobLogsRequest, grpc.ServerStreamingServer[GetJobLogsResponse]) error {
 	return status.Errorf(codes.Unimplemented, "method GetJobLogs not implemented")
-}
-func (UnimplementedJobServiceServer) ListJobs(context.Context, *ListJobsRequest) (*ListJobsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListJobs not implemented")
 }
 func (UnimplementedJobServiceServer) mustEmbedUnimplementedJobServiceServer() {}
 func (UnimplementedJobServiceServer) testEmbeddedByValue()                    {}
@@ -225,24 +209,6 @@ func _JobService_GetJobLogs_Handler(srv interface{}, stream grpc.ServerStream) e
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type JobService_GetJobLogsServer = grpc.ServerStreamingServer[GetJobLogsResponse]
 
-func _JobService_ListJobs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListJobsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(JobServiceServer).ListJobs(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: JobService_ListJobs_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(JobServiceServer).ListJobs(ctx, req.(*ListJobsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // JobService_ServiceDesc is the grpc.ServiceDesc for JobService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -261,10 +227,6 @@ var JobService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetJobStatus",
 			Handler:    _JobService_GetJobStatus_Handler,
-		},
-		{
-			MethodName: "ListJobs",
-			Handler:    _JobService_ListJobs_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

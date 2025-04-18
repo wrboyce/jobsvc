@@ -9,63 +9,36 @@ service JobService {
   rpc StopJob(StopJobRequest) returns (StopJobResponse);
   rpc GetJobStatus(GetJobStatusRequest) returns (GetJobStatusResponse);
   rpc GetJobLogs(GetJobLogsRequest) returns (stream GetJobLogsResponse);
-  rpc ListJobs(ListJobsRequest) returns (ListJobsResponse);
 }
 
 message StartJobRequest {
-  string name = 1;
-  string command = 2;
-  repeated string args = 3;
+  string command = 1;
+  repeated string args = 2;
 }
 
-message StartJobResponse {
-  string name = 1;
-}
+message StartJobResponse { string id = 1; }
 
-message StopJobRequest {
-  string name = 1;
-}
+message StopJobRequest { string id = 1; }
 
 message StopJobResponse {}
 
-message GetJobStatusRequest {
-  string name = 1;
-}
+message GetJobStatusRequest { string id = 1; }
 
 message GetJobStatusResponse {
   enum Status {
     UNKNOWN = 0;
     RUNNING = 1;  // job is active
     FINISHED = 2; // job finished successfully
-    FAILED = 3; // job finished with non-zero exit code
-    ERROR = 4; // job creation failed
+    FAILED = 3;   // job finished with non-zero exit code
+    STOPPED = 4;  // job was manually stopped
+    ERROR = 5;    // job creation failed
   }
 
   Status status = 1;
-  int32 pid = 2;
-  string command = 3;
-  string started_at = 4;
-  string finished_at = 5;
-  int32 exit_code = 6;
+  string command = 2;
+  int32 exit_code = 3;
 }
 
-message GetJobLogsRequest {
-  string name = 1;
-}
+message GetJobLogsRequest { string id = 1; }
 
-message GetJobLogsResponse {
-  bytes data = 1;
-}
-
-message ListJobsRequest {}
-
-message ListJobsResponse {
-  repeated JobSummary jobs = 1;
-}
-
-message JobSummary {
-  string name = 1;
-  GetJobStatusResponse.Status status = 2;
-  string started_at = 3;
-  string finished_at = 4;
-}
+message GetJobLogsResponse { bytes data = 1; }
