@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package jobrpc;
+
+option go_package = "github.com/wrboyce/jobsvc/jobrpc";
+
+service JobService {
+  rpc StartJob(StartJobRequest) returns (StartJobResponse);
+  rpc StopJob(StopJobRequest) returns (StopJobResponse);
+  rpc GetJobStatus(GetJobStatusRequest) returns (GetJobStatusResponse);
+  rpc GetJobLogs(GetJobLogsRequest) returns (stream GetJobLogsResponse);
+}
+
+message StartJobRequest {
+  string command = 1;
+  repeated string args = 2;
+}
+
+message StartJobResponse { string id = 1; }
+
+message StopJobRequest { string id = 1; }
+
+message StopJobResponse {}
+
+message GetJobStatusRequest { string id = 1; }
+
+message GetJobStatusResponse {
+  enum Status {
+    UNKNOWN = 0;
+    RUNNING = 1;  // job is active
+    FINISHED = 2; // job finished successfully
+    FAILED = 3;   // job finished with non-zero exit code
+    STOPPED = 4;  // job was manually stopped
+    ERROR = 5;    // job creation failed
+  }
+
+  Status status = 1;
+  string command = 2;
+  int32 exit_code = 3;
+}
+
+message GetJobLogsRequest { string id = 1; }
+
+message GetJobLogsResponse { bytes data = 1; }
